@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://localhost:3000/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CloudSpend cloud usage cost estimation and budget alerts demo">
+  <title>CloudSpend | Cloud Cost Console</title>
+  <link rel="stylesheet" href="./CloudSpend _ Cloud Cost Console_files/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="http://localhost:3000/" aria-label="CloudSpend home"><span class="brand-mark">C$</span><span>CloudSpend<small>Cloud cost console</small></span></a>
+    <div class="top-actions"><span class="demo-pill">DEMO · SAMPLE PRICING</span><button id="downloadReport" class="button button-outline">Download report</button></div>
+  </header>
+  <main class="container">
+    <section class="intro">
+      <div><p class="eyebrow">CLOUD FINOPS / OVERVIEW</p><h1>Understand your cloud spend.</h1><p class="muted">Estimate usage costs, track your budget, and catch overruns before they surprise you.</p></div>
+      <div class="month-chip"><span class="dot"></span><span id="monthLabel">October 2026</span></div>
+    </section>
+    <div id="notice" class="notice error hidden" role="status" aria-live="polite">Cannot read properties of null (reading 'reset')</div>
+    <section id="alertBanner" class="alert-banner hidden" role="alert"></section>
+    <section class="metrics-grid">
+      <article class="metric-card"><div class="metric-top"><span>Today's cost</span><span class="metric-icon">↗</span></div><strong id="dailyCost">$0.70</strong><p>Recorded for today</p></article>
+      <article class="metric-card"><div class="metric-top"><span>Month-to-date</span><span class="metric-icon">▤</span></div><strong id="monthlyCost">$8.37</strong><p>Current calendar month</p></article>
+      <article class="metric-card"><div class="metric-top"><span>Budget remaining</span><span class="metric-icon">◎</span></div><strong id="remainingBudget">$141.63</strong><p id="budgetCaption">of $150.00 monthly budget</p></article>
+      <article class="metric-card"><div class="metric-top"><span>Month-end forecast</span><span class="metric-icon">⌁</span></div><strong id="forecast">$11.79</strong><p>Run-rate estimate</p></article>
+    </section>
+    <section class="content-grid">
+      <article class="panel chart-panel">
+        <div class="panel-heading"><div><p class="eyebrow">SPEND TREND</p><h2>Daily estimated cost</h2></div><span class="subtle-label">Last 7 days</span></div>
+        <div class="chart-wrap"><canvas id="dailyChart" aria-label="Bar chart of daily cost over the last seven days" role="img" width="996" height="310"></canvas></div>
+        <p class="chart-footnote">Amounts are calculated from entered quantity × configured unit price.</p>
+      </article>
+      <article class="panel chart-panel">
+        <div class="panel-heading"><div><p class="eyebrow">COST BREAKDOWN</p><h2>By service</h2></div></div>
+        <div id="serviceBreakdown" class="breakdown"><div class="breakdown-item"><span class="breakdown-name">Compute</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="breakdown-value">$4.96</span></div><div class="breakdown-item"><span class="breakdown-name">Storage</span><div class="bar-track"><div class="bar-fill" style="width:25.201612903225808%"></div></div><span class="breakdown-value">$1.25</span></div><div class="breakdown-item"><span class="breakdown-name">Database</span><div class="bar-track"><div class="bar-fill" style="width:21.7741935483871%"></div></div><span class="breakdown-value">$1.08</span></div><div class="breakdown-item"><span class="breakdown-name">Data Transfer</span><div class="bar-track"><div class="bar-fill" style="width:21.7741935483871%"></div></div><span class="breakdown-value">$1.08</span></div></div>
+      </article>
+    </section>
+    <section class="content-grid lower-grid">
+      <article class="panel">
+        <div class="panel-heading"><div><p class="eyebrow">TRACK USAGE</p><h2>Add a usage record</h2></div></div>
+        <form id="usageForm" class="form-grid">
+          <label>Date<input name="date" id="usageDate" type="date" required=""></label>
+          <label>Cloud provider<input name="provider" placeholder="e.g. Demo Cloud" maxlength="80"></label>
+          <label>Service<select name="service" id="serviceSelect" required=""><option value="Compute">Compute — hour</option><option value="Storage">Storage — GB-day</option><option value="Database">Database — hour</option><option value="Data Transfer">Data Transfer — GB</option></select></label>
+          <label>Quantity<input name="quantity" type="number" min="0.001" step="any" placeholder="e.g. 12" required=""></label>
+          <label class="wide">Resource name<input name="resource" placeholder="e.g. web-server-01" maxlength="100"></label>
+          <label>Region<input name="region" placeholder="e.g. ap-south-1" maxlength="60"></label>
+          <label>Note<input name="note" placeholder="Optional note" maxlength="200"></label>
+          <button class="button button-primary wide" type="submit">+ Add usage record</button>
+        </form>
+      </article>
+      <article class="panel">
+        <div class="panel-heading"><div><p class="eyebrow">COST CONTROLS</p><h2>Budget &amp; pricing</h2></div></div>
+        <form id="budgetForm" class="form-grid compact-form">
+          <label>Monthly budget (USD)<input name="monthlyBudget" id="monthlyBudgetInput" type="number" min="0" step="0.01" required=""></label>
+          <label>Alert at (%)<input name="alertThreshold" id="alertThresholdInput" type="number" min="1" max="100" step="1" required=""></label>
+          <button class="button button-primary wide" type="submit">Save budget settings</button>
+        </form>
+        <div class="section-divider"></div>
+        <form id="pricingForm" class="form-grid compact-form">
+          <label>Service name<input name="service" placeholder="e.g. AI inference" maxlength="60" required=""></label>
+          <label>Unit<input name="unit" placeholder="e.g. 1K requests" maxlength="30" required=""></label>
+          <label class="wide">Price per unit (USD)<input name="price" type="number" min="0" step="any" required="" placeholder="e.g. 0.003"></label>
+          <button class="button button-outline wide" type="submit">Add / update pricing</button>
+        </form>
+        <div id="pricingList" class="pricing-list"><span class="price-chip"><strong>Compute</strong> · $0.08/hour</span><span class="price-chip"><strong>Storage</strong> · $0.03/GB-day</span><span class="price-chip"><strong>Database</strong> · $0.12/hour</span><span class="price-chip"><strong>Data Transfer</strong> · $0.09/GB</span></div>
+      </article>
+    </section>
+    <section class="panel records-panel">
+      <div class="panel-heading records-heading"><div><p class="eyebrow">USAGE LEDGER</p><h2>Recent usage records</h2><p class="muted small">Sample records are labelled SIMULATED. Costs update when you change service pricing.</p></div><div class="record-actions"><label class="button button-outline file-button">Import CSV<input type="file" id="csvInput" accept=".csv,text/csv" hidden=""></label><button id="resetDemo" class="button button-quiet" type="button">Reset demo data</button></div></div>
+      <div class="table-scroll"><table><thead><tr><th>Date</th><th>Service / resource</th><th>Provider / region</th><th>Quantity</th><th>Unit price</th><th>Est. cost</th><th>Note</th></tr></thead><tbody id="usageRows"><tr><td>2026-10-22</td><td class="service-cell"><strong>Storage</strong><span>assets-bucket</span></td><td>Demo Cloud<br><span class="service-cell">us-east-1</span></td><td>28 GB-day</td><td>$0.03</td><td class="cost-cell">$0.70</td><td>SIMULATED sample data<span class="simulated-tag">SIMULATED</span></td></tr><tr><td>2026-10-21</td><td class="service-cell"><strong>Compute</strong><span>web-vm-01</span></td><td>Demo Cloud<br><span class="service-cell">us-east-1</span></td><td>20 hour</td><td>$0.08</td><td class="cost-cell">$1.60</td><td>SIMULATED sample data<span class="simulated-tag">SIMULATED</span></td></tr><tr><td>2026-10-20</td><td class="service-cell"><strong>Data Transfer</strong><span>outbound-traffic</span></td><td>Demo Cloud<br><span class="service-cell">ap-south-1</span></td><td>12 GB</td><td>$0.09</td><td class="cost-cell">$1.08</td><td>SIMULATED sample data<span class="simulated-tag">SIMULATED</span></td></tr><tr><td>2026-10-19</td><td class="service-cell"><strong>Compute</strong><span>worker-vm-02</span></td><td>Demo Cloud<br><span class="service-cell">us-east-1</span></td><td>24 hour</td><td>$0.08</td><td class="cost-cell">$1.92</td><td>SIMULATED sample data<span class="simulated-tag">SIMULATED</span></td></tr><tr><td>2026-10-18</td><td class="service-cell"><strong>Database</strong><span>orders-db</span></td><td>Demo Cloud<br><span class="service-cell">eu-west-1</span></td><td>9 hour</td><td>$0.12</td><td class="cost-cell">$1.08</td><td>SIMULATED sample data<span class="simulated-tag">SIMULATED</span></td></tr><tr><td>2026-10-17</td><td class="service-cell"><strong>Storage</strong><span>assets-bucket</span></td><td>Demo Cloud<br><span class="service-cell">us-east-1</span></td><td>22 GB-day</td><td>$0.03</td><td class="cost-cell">$0.55</td><td>SIMULATED sample data<span class="simulated-tag">SIMULATED</span></td></tr><tr><td>2026-10-16</td><td class="service-cell"><strong>Compute</strong><span>web-vm-01</span></td><td>Demo Cloud<br><span class="service-cell">us-east-1</span></td><td>18 hour</td><td>$0.08</td><td class="cost-cell">$1.44</td><td>SIMULATED sample data<span class="simulated-tag">SIMULATED</span></td></tr></tbody></table></div>
+      <p id="recordCount" class="table-caption">Showing 7 of 7 records · Values are estimates in USD.</p>
+    </section>
+    <footer><span>CloudSpend · Educational prototype</span><span>Not connected to any real cloud billing account.</span></footer>
+  </main>
+  <script src="./CloudSpend _ Cloud Cost Console_files/app.js.download"></script>
+
+
+</body></html>
